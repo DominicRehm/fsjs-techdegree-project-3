@@ -63,6 +63,10 @@ function jsPunsSet() {
     // Hide all Colors
     hideColors()
     for (var i = 0; i < colors.length; i++) {
+        if (i == 0) {
+            colors[i].selected = true;
+        };
+
         switch (colors[i].value) {
             case 'cornflowerblue':
             case 'darkslategrey':
@@ -78,6 +82,9 @@ function heartJs() {
     // Hide all Colors
     hideColors()
     for (var i = 0; i < colors.length; i++) {
+        if (i == 3) {
+            colors[i].selected = true;
+        };
         switch (colors[i].value) {
             case 'tomato':
             case 'steelblue':
@@ -127,12 +134,12 @@ activities.addEventListener('click', (e) => {
                 activitiesInput[i].parentNode.style.color = 'red';
                 // Enable the event target for deselecting
                 e.target.disabled = false;
-                e.target.parentNode.style.color = 'black';
+                e.target.parentNode.style.color = 'white';
             };
             if (e.target.checked == false && timeData == activitiesInput[i].getAttribute(dateAttr)) {
                 // Enable all activities with the same date and time
                 activitiesInput[i].disabled = false;
-                activitiesInput[i].parentNode.style.color = 'black';
+                activitiesInput[i].parentNode.style.color = '#f2f2f2';
             };
         };
 
@@ -158,9 +165,13 @@ const bitcoin = document.querySelector('#bitcoin');
 
 for (var i = 0; i < payments.length; i++) {
     if (payments[i].value == 'select method') {
+        // disable the placeholder "select method"
         payments[i].disabled = true;
     } else if (payments[i].value == 'credit card') {
+        // select "credit card" as default and hide the other payments
         payments[i].selected = true;
+        paypal.style.display = 'none';
+        bitcoin.style.display = 'none';
         creditCard.style.display = 'inherit';
     }
 }
@@ -169,22 +180,28 @@ let creditPayment = true;
 
 paymentSelection.addEventListener('change', (e) => {
     if (e.target.value == 'credit card') {
+        // If the user select credit card -> show credit card payment and hide the other payment methods
         console.log('credit card');
         creditCard.style.display = 'inherit';
         paypal.style.display = 'none';
         bitcoin.style.display = 'none';
+        // Set credit payment to 'true' for activating the validation by clicking the submit button
         creditPayment = true;
     } else if (e.target.value == 'paypal') {
+        // if the user select paypal -> show paypal payment and hide the other payment methods
         console.log('paypal');
         creditCard.style.display = 'none';
         paypal.style.display = 'inherit';
         bitcoin.style.display = 'none';
+        // Set credit payment to 'false' for deactivation the validation by clicking the submit button
         creditPayment = false;
     } else if (e.target.value == 'bitcoin') {
+        // if the user select bitcoin -> show bitcoin payment and hide the other payment methods
         console.log('bitcoin');
         creditCard.style.display = 'none';
         paypal.style.display = 'none';
         bitcoin.style.display = 'inherit';
+        // Set credit payment to 'false' for deactivation the validation by clicking the submit button
         creditPayment = false;
     }
 });
@@ -194,6 +211,8 @@ console.log(creditPayment);
 //---------------------
 // Validation Functions
 //---------------------
+
+// Variables for checking the validations if user clicks the submit button
 let userNameIsValid = false;
 let emailIsValid = false;
 let validActivity = false;
@@ -201,49 +220,13 @@ let cardNumberIsValid = false;
 let zipCodeIsValid = false;
 let cvvIsValid = false;
 
-// Name Validation
+// Name Validation ----- //
 function isValidName(name) {
     // Validation for two names (first name and last name) - no specific order
     return /^[A-Za-z]+\s[A-Za-z]+$/.test(name);
 };
 
-// E-Mail Validation
-function isValidEmail(email) {
-    return /^[^@]+@[^@]+\.[a-z]+$/.test(email);
-};
-
-// Checking if at least one checkbox is checked
-function checkboxActive() {
-    if (totalCosts == 0) {
-        // If no checkbox is checked return false
-        return validActivity = false;
-    } else {
-        // if at least on checkbox is checked return true
-        return validActivity = true;
-    };
-};
-
-// Credit Card Number Validation
-cardNumber = document.querySelector('#cc-num');
-
-function isValidCardNumber(cardNumber) {
-    return /^\d{13,16}$/.test(cardNumber);
-};
-
-// Zip Code Validation
-zipCode = document.querySelector('#zip');
-
-function isValidZipCode(zipCode) {
-    return /^\d{5}$/.test(zipCode);
-};
-
-// CVV Validation
-cvvNumber = document.querySelector('#cvv');
-
-function isValidCvv(cvv) {
-    return /^\d{3}$/.test(cvv);
-}
-
+// Change the style when the user leaves the input field
 nameField.addEventListener('blur', () => {
     let userName = nameField.value;
 
@@ -257,8 +240,14 @@ nameField.addEventListener('blur', () => {
     }
 });
 
+// E-Mail Validation ----- //
+function isValidEmail(email) {
+    return /^[^@]+@[^@]+\.[a-z]+$/.test(email);
+};
+
 const emailField = document.querySelector('#mail');
 
+// Change the style when the user leaves the input field
 emailField.addEventListener('blur', () => {
     let email = emailField.value;
     if (isValidEmail(email)) {
@@ -271,6 +260,34 @@ emailField.addEventListener('blur', () => {
     };
 });
 
+// Checking if at least one checkbox is checked ----- //
+function checkboxActive() {
+    if (totalCosts == 0) {
+        // If no checkbox is checked return false
+        return validActivity = false;
+    } else {
+        // if at least on checkbox is checked return true
+        return validActivity = true;
+    };
+};
+
+// Credit Card Number Validation ----- //
+cardNumber = document.querySelector('#cc-num');
+
+function isValidCardNumber(cardNumber) {
+    return /^\d{13,16}$/.test(cardNumber);
+};
+
+// if the credit card number field has focus -> show the text input in "ccInfo"
+cardNumber.addEventListener('focus', () => {
+    const ccInfo = document.querySelector('#ccInfo');
+    let ccNumber = cardNumber.value;
+    if (ccNumber == '') {
+        ccInfo.textContent = 'Type in your credit card number!';
+    };
+})
+
+// Change the style when the user leaves the input field
 cardNumber.addEventListener('blur', () => {
     let ccNumber = cardNumber.value;
     if (isValidCardNumber(ccNumber)) {
@@ -283,18 +300,38 @@ cardNumber.addEventListener('blur', () => {
     }
 });
 
+// change the content of ccInfo if value has changed by input
 cardNumber.addEventListener('input', () => {
     const ccInfo = document.querySelector('#ccInfo');
     let ccNumber = cardNumber.value;
     let validCc = isValidCardNumber(ccNumber);
-    if (!validCc) {
-        ccInfo.style.display = 'inherit';
+    if (!validCc && ccNumber == '') {
+        ccInfo.innerHTML = 'Type in your credit card number!';
+    } else if (!validCc) {
+        ccInfo.innerHTML = 'The card number has between 13 and 16 digits!';
     } else {
-        ccInfo.style.display = 'none';
+        ccInfo.innerHTML = "That's a valid credit card number!";
     };
 });
 
+// Zip Code Validation ----- //
+zipCode = document.querySelector('#zip');
 
+// create the validation for zip code
+function isValidZipCode(zipCode) {
+    return /^\d{5}$/.test(zipCode);
+};
+
+// create a hint for the zip code field on focus
+zipCode.addEventListener('focus', () => {
+    const zipInfo = document.querySelector('#zipInfo');
+    let ccNumber = cardNumber.value;
+    if (ccNumber == '') {
+        zipInfo.textContent = 'Type in your 5 digit zip!';
+    };
+})
+
+// Change the style when the user leaves the input field
 zipCode.addEventListener('blur', () => {
     let zCode = zipCode.value;
     if (isValidZipCode(zCode)) {
@@ -307,40 +344,43 @@ zipCode.addEventListener('blur', () => {
     }
 });
 
+// change the content of zipInfo if value has changed by input
 zipCode.addEventListener('input', () => {
     const zipInfo = document.querySelector('#zipInfo');
     let zCode = zipCode.value;
     let validZip = isValidZipCode(zCode);
-    if (!validZip) {
-        zipInfo.style.display = 'inherit';
+    if (!validZip && zCode == '') {
+        console.log('empty and invalid')
+        zipInfo.textContent = 'Type in your 5 digit Zip!';
+    } else if (!validZip) {
+        zipInfo.textContent = 'Must be 5 digits!';
     } else {
-        zipInfo.style.display = 'none';
-    }
+        zipInfo.textContent = 'That is a valid Zip!';
+    };
 });
 
+// CVV Validation ----- //
+cvvNumber = document.querySelector('#cvv');
+
+// create the validation for cvv
+function isValidCvv(cvv) {
+    return /^\d{3}$/.test(cvv);
+}
+
+// do something by leaving the cvv field
 cvvNumber.addEventListener('blur', () => {
     let cvvCode = cvvNumber.value;
     if (isValidCvv(cvvCode)) {
+        // if the cvv is valid -> green border
         cvvNumber.style.border = '2px solid green';
         cvvNumber.style.color = 'green';
         return cvvIsValid = true;
     } else {
+        // if the cvv is invalid -> red boarder
         cvvNumber.style.border = '3px solid red';
         return cvvIsValid = false;
     }
 });
-
-cvvNumber.addEventListener('input', () => {
-    const cvvInfo = document.querySelector('#cvvInfo');
-    let cvvCode = cvvNumber.value;
-    let validCvv = isValidCvv(cvvCode);
-    if (!validCvv) {
-        cvvInfo.style.display = 'inherit';
-    } else {
-        cvvInfo.style.display = 'none';
-    };
-});
-
 
 //------------------------
 // Step 5: Submit the form
@@ -349,9 +389,21 @@ cvvNumber.addEventListener('input', () => {
 const submitButton = document.querySelector('button');
 
 submitButton.addEventListener('click', (e) => {
-    e.preventDefault();
+    // calling the checkboxActive funktion
     checkboxActive();
+
+    // Check Validation when user clicks on "submit"
+    if (userNameIsValid && emailIsValid && validActivity && !creditPayment) {
+        console.log('all valid - no credit card');
+    } else if (userNameIsValid && emailIsValid && validActivity && cardNumberIsValid && zipCodeIsValid && cvvIsValid && creditPayment) {
+        console.log('all valid');
+    } else {
+        // remove the submit button function
+        e.preventDefault();
+    }
+
     if (!userNameIsValid) {
+        // if the user name isn't valid -> show error message
         console.log('invalid User name');
         document.querySelector('#user-error').style.display = 'inherit';
     } else {
@@ -359,6 +411,7 @@ submitButton.addEventListener('click', (e) => {
     };
 
     if (!emailIsValid) {
+        // if the email isn't valid -> show error message
         console.log('invalid email');
         document.querySelector('#email-error').style.display = 'inherit';
     } else {
@@ -366,6 +419,7 @@ submitButton.addEventListener('click', (e) => {
     };
 
     if (!validActivity) {
+        // if no checkbox is checked -> show error message
         console.log('invalid activity');
         document.querySelector('#acty-error').style.display = 'inherit';
     } else {
@@ -373,6 +427,7 @@ submitButton.addEventListener('click', (e) => {
     };
 
     if (!cardNumberIsValid && creditPayment) {
+        // if card number is invalid AND credit card payment is active -> show error message
         console.log('invalid card number');
         document.querySelector('#cardnumber-error').style.display = 'inherit';
     } else {
@@ -380,6 +435,7 @@ submitButton.addEventListener('click', (e) => {
     };
 
     if (!zipCodeIsValid && creditPayment) {
+        // if zip code is invalid AND credit card payment is active -> show error message
         console.log('invalid zip code');
         document.querySelector('#zip-error').style.display = 'inherit';
     } else {
@@ -387,6 +443,7 @@ submitButton.addEventListener('click', (e) => {
     };
 
     if (!cvvIsValid && creditPayment) {
+        // if cvv is invalid AND credit card payment is active -> show error message
         console.log('invalid cvv');
         document.querySelector('#cvv-error').style.display = 'inherit';
     } else {

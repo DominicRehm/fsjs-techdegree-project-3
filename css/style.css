@@ -180,7 +180,6 @@ option {
 .credit-card,
 .paypal,
 .bitcoin {
-	display: none;
 	color: #f2f2f2;
 	margin-top: 10px;
 	margin-bottom: 10px;
@@ -195,7 +194,6 @@ option {
 #ccInfo,
 #zipInfo,
 #cvvInfo {
-	display: none;
 	margin-top: 0px;
 	bottom: -15px;
 	position: absolute;
